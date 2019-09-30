@@ -11,7 +11,8 @@ function split(inputStream, opts, createOutputStreamCallback) {
   let header;
   const options = {
     delimiter: opts.delimiter || '\n',
-    lineLimit: opts.lineLimit
+    lineLimit: opts.lineLimit,
+    headerLine: opts.headerLine || 0
   };
 
   return new Promise((resolve, reject) => {
@@ -34,9 +35,8 @@ function split(inputStream, opts, createOutputStreamCallback) {
       handleError(err);
       return;
     }
-
     lineStream.on('data', line => {
-      if (!header) {
+      if (!header && lineIndex ==options.headerLine) {
         header = line;
       } else {
         if (lineIndex === 0) {
