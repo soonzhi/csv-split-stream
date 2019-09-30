@@ -31,15 +31,15 @@ function split(inputStream, opts, createOutputStreamCallback) {
 
     try {
       lineStream = byline(inputStream);
-    } catch(err) {
+    } catch (err) {
       handleError(err);
       return;
     }
     lineStream.on('data', line => {
-      if (!header && lineIndex ==options.headerLine) {
+      if (!header && lineIndex === options.headerLine) {
         header = line;
       } else {
-        if (lineIndex === 0) {
+        if (lineIndex === options.headerLine) {
           if (outputStream) {
             outputStream.end();
           }
@@ -47,10 +47,15 @@ function split(inputStream, opts, createOutputStreamCallback) {
           outputStream.write(header);
           outputStream.write(options.delimiter);
         }
-
-        outputStream.write(line);
-        outputStream.write(options.delimiter);
+        if (header) {
+          outputStream.write(line);
+          outputStream.write(options.delimiter);
+        }
         lineIndex = (++lineIndex) % options.lineLimit;
+        // original
+        // outputStream.write(line);
+        // outputStream.write(options.delimiter);
+        // lineIndex = (++lineIndex) % options.lineLimit;
       }
     });
 
